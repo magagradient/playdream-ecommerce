@@ -25,7 +25,7 @@ export default function ProductCard({ product }) {
 
   const toggleFavorite = () => {
     if (fav) remove(product.id_product);
-    else add(product.id_product);
+    else add(product);
   };
 
   return (
@@ -74,8 +74,8 @@ export default function ProductCard({ product }) {
           <button
             onClick={toggleFavorite}
             className={`w-10 h-10 border flex items-center justify-center transition-all ${fav
-              ? "bg-[#ffb4ab] border-[#ffb4ab] text-[#690005]"
-              : "border-[#494551] text-[#cbc4d2] hover:border-[#ffb4ab] hover:text-[#ffb4ab]"
+              ? "bg-[#381e72] border-[#381e72] text-[#e6e0e9]"
+              : "border-[#494551] text-[#cbc4d2] hover:border-[#381e72] hover:text-[#381e72]"
               }`}
           >
             ♥

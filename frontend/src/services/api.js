@@ -99,15 +99,20 @@ export const getFavoriteProducts = (token, userId) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
-export const addFavoriteProduct = (token, userId, productId) =>
-  request("/favorite_products", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify({
-      id_user: userId,
-      id_product: productId,
-    }),
-  });
+  export const addFavoriteProduct = async (token, userId, productId) => {
+    const response = await fetch(`${API_URL}/favorite_products`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id_product: productId }),
+    });
+  
+    const data = await response.json();
+    if (!response.ok) throw new Error(data?.message || "Error al agregar favorito");
+    return data;
+  };
 
 export const removeFavoriteProduct = (token, productId) =>
   request(`/favorite_products/${productId}`, {

@@ -25,4 +25,21 @@ const sendResetEmail = async (to, token) => {
     await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendResetEmail };
+const sendContactEmail = async ({ name, email, message }) => {
+  const mailOptions = {
+      from: `"Magalab Contact" <${process.env.MAIL_USER}>`,
+      to: process.env.MAIL_USER,
+      subject: `[CONTACTO] Mensaje de ${name}`,
+      html: `
+          <h3>Nuevo mensaje de contacto</h3>
+          <p><strong>Nombre:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Mensaje:</strong></p>
+          <p>${message}</p>
+      `
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+module.exports = { sendResetEmail, sendContactEmail };

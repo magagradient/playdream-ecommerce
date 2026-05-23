@@ -5,17 +5,35 @@ import ProductCard from "../../components/ProductCard";
 export default function Favorites() {
   const { favorites } = useFavorites();
 
-  if (!favorites) return <p className="p-8">Cargando favoritos...</p>;
+  if (!favorites) return (
+    <p className="text-[#cbc4d2] text-xs uppercase tracking-widest p-16">[CARGANDO...]</p>
+  );
 
   return (
-    <section className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Mis favoritos</h1>
+    <section className="min-h-screen bg-[#141218] px-16 py-12" style={{ fontFamily: "Space Grotesk" }}>
+      
+<div className="mb-10">
+  <div className="inline-block px-2 py-1 bg-[#ffb4ab] text-[#690005] text-xs font-semibold uppercase tracking-[0.5em] mb-4">
+    CUENTA
+  </div>
+  <h1 className="text-[40px] font-bold text-[#e6e0e9] uppercase tracking-tighter leading-none mb-2">
+    MIS_FAVORITOS
+  </h1>
+  <div className="flex items-center gap-4 mt-2">
+    <p className="text-[#494551] text-xs uppercase tracking-widest border-l border-[#ffb4ab] pl-4">
+      // {favorites.length} OBRA{favorites.length !== 1 ? "S" : ""} GUARDADA{favorites.length !== 1 ? "S" : ""}
+    </p>
+    <span className="px-2 py-1 bg-[#381e72] text-[#e6e0e9] text-xs uppercase tracking-widest">
+      ♥ {favorites.length}
+    </span>
+  </div>
+</div>
 
       {favorites.length === 0 ? (
-        <div className="text-center">
-          <p className="mb-4">No tenés favoritos todavía.</p>
-          <Link to="/shop" className="text-blue-600 hover:underline">
-            Ir a la tienda
+        <div className="border border-[#494551] p-8 text-center">
+          <p className="text-[#cbc4d2] text-xs uppercase tracking-widest mb-4">[LISTA_VACÍA] // NO TENÉS FAVORITOS TODAVÍA</p>
+          <Link to="/shop" className="text-[#ffb4ab] text-xs uppercase tracking-widest hover:text-white transition-colors">
+            → IR_A_LA_TIENDA
           </Link>
         </div>
       ) : (
@@ -25,6 +43,7 @@ export default function Favorites() {
           ))}
         </div>
       )}
+
     </section>
   );
 }

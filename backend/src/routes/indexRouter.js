@@ -29,6 +29,7 @@ const shoppingCartsRouter = require("./shoppingCartsRouter");
 const themesRouter = require("./themesRouter");
 const productThemesRouter = require("./productThemesRouter");
 const userCouponsRouter = require("./userCouponsRouter");
+const contactRouter = require("./contactRouter");
 
 
 const router = express.Router();
@@ -63,6 +64,7 @@ router.use("/shopping_carts", shoppingCartsRouter);
 router.use("/themes", themesRouter);
 router.use("/product_themes", productThemesRouter);
 router.use("/user_coupons", userCouponsRouter);
+router.use("/contact", contactRouter);
 
 
 module.exports = router;
