@@ -28,12 +28,26 @@ module.exports = (sequelize) => {
         unit_price: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false
-        }
+        },
+        artist_name: {
+          type: DataTypes.STRING(100),
+          allowNull: true,
+      },
+      artist_bio: {
+          type: DataTypes.TEXT,
+          allowNull: true,
+      },
+      music_url: {
+          type: DataTypes.STRING(255),
+          allowNull: true,
+      },
     }, {
         tableName: "orders_products",
         timestamps: false,
         freezeTableName: true 
-    });
+    },
+
+    );
 
     return OrdersProducts;
 };

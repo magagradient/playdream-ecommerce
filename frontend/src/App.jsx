@@ -47,6 +47,7 @@ import Favorites from "./pages/Account/Favorites.jsx";
 import ChangePassword from "./pages/Account/ChangePassword.jsx";
 import ForgotPassword from "./pages/Account/ForgotPassword.jsx";
 import ResetPassword from "./pages/Account/ResetPassword.jsx";
+import MyPurchases from "./pages/Account/MyPurchases.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -109,6 +110,7 @@ function App() {
                     <Route path="/account/forgot-password" element={<ForgotPassword />} />
                     <Route path="/account/reset-password/:token" element={<ResetPassword />} />
 
+
                     {/* Account - protegidas */}
                     <Route
                       path="/account/profile"
@@ -131,6 +133,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <ChangePassword />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/account/my-purchases"
+                      element={
+                        <ProtectedRoute>
+                          <MyPurchases />
                         </ProtectedRoute>
                       }
                     />

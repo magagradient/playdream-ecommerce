@@ -1,4 +1,5 @@
-const { Orders, OrdersProducts, Products } = require("../../../database/indexModels");
+const { Orders, OrdersProducts, Products, ProductImages, Users } = require("../../../database/indexModels");
+const { sendPurchaseEmail, sendSaleNotification, sendErrorEmail } = require("../../../utils/mailer");
 
 const webhookMercadoPago = async (req, res) => {
     try {
@@ -10,7 +11,6 @@ const webhookMercadoPago = async (req, res) => {
             return res.sendStatus(200);
         }
 
-        // Consultar el pago a la API de MP
         const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${data.id}`, {
             headers: {
                 Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
@@ -26,20 +26,38 @@ const webhookMercadoPago = async (req, res) => {
 
         const id_order = parseInt(payment.external_reference);
 
-        // Actualizar orden a paid
         const order = await Orders.findByPk(id_order);
         if (order) {
             order.status = "paid";
             await order.save();
         }
 
-        // Marcar productos como vendidos
         const orderProducts = await OrdersProducts.findAll({ where: { id_order } });
+        const productsForEmail = [];
+
         for (const op of orderProducts) {
             const product = await Products.findByPk(op.id_product);
             if (product) {
                 product.is_sold = true;
                 await product.save();
+
+                const images = await ProductImages.findAll({ where: { id_product: op.id_product } });
+                productsForEmail.push({
+                    title: product.title,
+                    images: images.map(img => ({ image_url: img.image_url, image_type: img.image_type }))
+                });
+            }
+        }
+
+        if (order) {
+            const user = await Users.findByPk(order.id_user);
+            if (user) {
+                await sendPurchaseEmail(user.email, productsForEmail);
+                await sendSaleNotification(
+                    productsForEmail.map(p => p.title),
+                    id_order,
+                    user.email
+                );
             }
         }
 
@@ -47,6 +65,9 @@ const webhookMercadoPago = async (req, res) => {
 
     } catch (error) {
         console.error("Error en webhook MP:", error);
+        const order = await Orders.findByPk(parseInt(req.body?.data?.id)).catch(() => null);
+        const user = order ? await Users.findByPk(order.id_user).catch(() => null) : null;
+        await sendErrorEmail("MercadoPago", error.message, user?.email || null);
         return res.sendStatus(500);
     }
 };

@@ -17,6 +17,7 @@ const ordersPaginationSchema = require("../validators/orders/ordersPaginationSch
 const index = require("../controllers/orders/get/index");
 const show = require("../controllers/orders/get/show");
 const byUser = require("../controllers/orders/get/byUser");
+const myPurchases = require("../controllers/orders/get/myPurchases");
 
 const create = require("../controllers/orders/post/create");
 
@@ -29,6 +30,9 @@ const destroy = require("../controllers/orders/delete/destroy");
 // Routes
 // GET all orders
 router.get("/", authMiddleware(), validateSchema(ordersPaginationSchema, "query"), index);
+
+// GET my purchases
+router.get("/my-purchases", authMiddleware(), myPurchases);
 
 // GET single order by ID
 router.get("/:id",
@@ -43,6 +47,7 @@ router.get("/user/:id_user",
     validateSchema(userIdParamSchema, "params"),
     byUser
 );
+
 
 // POST create order
 router.post("/",

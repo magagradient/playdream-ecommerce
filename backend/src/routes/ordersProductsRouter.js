@@ -20,12 +20,13 @@ const create = require("../controllers/ordersProducts/post/create");
 
 const update = require("../controllers/ordersProducts/put/update");
 
+const updateCredit = require("../controllers/ordersProducts/patch/updateCredit");
+
 const destroy = require("../controllers/ordersProducts/delete/destroy");
 
 /* ---------------------------------- */
 
-// Routes
-// Routes
+// rutas
 router.get("/", authMiddleware(), index);
 
 router.get("/:id_order",
@@ -46,6 +47,10 @@ router.put("/:id_order/:id_product",
     validateSchema(ordersProductsUpdateSchema, "body"),
     update
 );
+
+router.patch("/:id_order/:id_product/credit",
+  authMiddleware(),
+  updateCredit);
 
 router.delete("/:id_order/:id_product",
     authMiddleware(),

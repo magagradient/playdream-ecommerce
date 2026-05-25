@@ -48,6 +48,9 @@ export default function Profile() {
               <Link to="/account/favorites" className="block text-[#cbc4d2] hover:text-[#ffb4ab] transition-colors">
                 → MIS_FAVORITOS
               </Link>
+              <Link to="/account/my-purchases" className="block text-[#cbc4d2] hover:text-[#ffb4ab] transition-colors">
+                → MIS_COMPRAS
+              </Link>
               <Link to="/account/change-password" className="block text-[#cbc4d2] hover:text-[#ffb4ab] transition-colors">
                 → CAMBIAR_CONTRASEÑA
               </Link>

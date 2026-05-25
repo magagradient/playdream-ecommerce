@@ -191,3 +191,8 @@ export const createPayPalOrder = async (token, items, id_order) => {
   if (!response.ok) throw new Error(data?.message || "Error al crear orden PayPal");
   return data;
 };
+
+export const getMyPurchases = (token) =>
+  request("/orders/my-purchases", {
+    headers: { Authorization: `Bearer ${token}` },
+  });

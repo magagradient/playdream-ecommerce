@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getProducts, searchProducts } from "../services/api";
 import ProductCard from "./ProductCard";
 
-export default function ProductList({ filter, searchQuery, colors, keywords, series, isSold }) {
+export default function ProductList({ filter, searchQuery, colors, keywords, series, isSold, onCardClick }) {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -36,6 +36,7 @@ export default function ProductList({ filter, searchQuery, colors, keywords, ser
         <ProductCard
           key={product.id_product}
           product={product}
+          onCardClick={onCardClick}
         />
       ))}
     </div>

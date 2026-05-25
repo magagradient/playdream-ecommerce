@@ -24,6 +24,7 @@ const status = require("../controllers/products/get/status");
 const getRelations = require("../controllers/products/get/getRelations");
 const search = require("../controllers/products/get/search");
 const related = require("../controllers/products/get/related");
+const soldCredit = require("../controllers/products/get/soldCredit");
 
 // patch
 const toggleSold = require("../controllers/products/patch/toggleSold");
@@ -51,6 +52,7 @@ router.get("/search", validateSchema(productSearchSchema, 'query'), search);
 router.get("/status/:type", status);
 router.get("/:id/related", related);
 router.get("/:id/relations", getRelations);
+router.get("/:id/sold-credit", validateSchema(idParamSchema, "params"), soldCredit);
 router.get("/:id", validateSchema(idParamSchema, "params"), show);
 router.get("/", index);
 
