@@ -49,6 +49,12 @@ import ForgotPassword from "./pages/Account/ForgotPassword.jsx";
 import ResetPassword from "./pages/Account/ResetPassword.jsx";
 import MyPurchases from "./pages/Account/MyPurchases.jsx";
 
+// Admin
+import AdminLayout from "./pages/Admin/AdminLayout";
+import AdminProducts from "./pages/Admin/AdminProducts";
+import AdminOrders from "./pages/Admin/AdminOrders";
+import AdminUsers from "./pages/Admin/AdminUsers";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -144,6 +150,20 @@ function App() {
                         </ProtectedRoute>
                       }
                     />
+
+                    {/* Admin */}
+                    <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute roles={["admin"]}>
+                          <AdminLayout />
+                        </ProtectedRoute>
+                      }
+                    >
+                      <Route path="products" element={<AdminProducts />} />
+                      <Route path="orders" element={<AdminOrders />} />
+                      <Route path="users" element={<AdminUsers />} />
+                    </Route>
 
                     {/* 404 */}
                     <Route path="*" element={<NotFound />} />

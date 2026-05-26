@@ -1,5 +1,6 @@
 const express = require("express");
 
+const adminRouter = require("./adminRouter");
 const authorsRouter = require("./authorsRouter");
 const productsRouter = require("./productsRouter");
 const blogPostsRouter = require("./blogPostsRouter");
@@ -34,7 +35,7 @@ const contactRouter = require("./contactRouter");
 
 const router = express.Router();
 
-
+router.use("/admin", adminRouter);
 router.use("/authors", authorsRouter);
 router.use("/products", productsRouter);
 router.use("/blog_posts", blogPostsRouter);
