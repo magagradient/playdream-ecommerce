@@ -1,71 +1,90 @@
-import { createContext, useState, useEffect } from "react";
-import { loginRequest, getProfileRequest } from "../services/authService";
+import { createContext, useState, useEffect, useCallback } from "react";
+import { loginRequest, getProfileRequest, refreshTokenRequest, logoutRequest } from "../services/authService";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem("accessToken"));
   const [checkingAuth, setCheckingAuth] = useState(true);
+
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken) {
+      try {
+        await logoutRequest(refreshToken);
+      } catch (error) {
+        console.error("Error en logout:", error);
+      }
+    }
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    setToken(null);
+    setUser(null);
+  }, []);
+
+  const refreshAccessToken = useCallback(async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+      await logout();
+      return null;
+    }
+    try {
+      const data = await refreshTokenRequest(refreshToken);
+      localStorage.setItem("accessToken", data.accessToken);
+      setToken(data.accessToken);
+      return data.accessToken;
+    } catch (error) {
+      await logout();
+      return null;
+    }
+  }, [logout]);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      console.log("TOKEN EN EFFECT:", token);
-
       if (!token) {
-        console.log("NO HAY TOKEN → no se carga perfil");
         setCheckingAuth(false);
         return;
       }
-
       try {
         const response = await getProfileRequest(token);
-        console.log("RESPUESTA CRUDA PROFILE:", response);
-
         const userData = response?.data || response;
-
-        console.log("USER SETEADO DESDE EFFECT:", userData);
-
         setUser(userData);
       } catch (error) {
-        console.error("ERROR EN EFFECT → logout automático:", error);
-        localStorage.removeItem("token");
-        setToken(null);
-        setUser(null);
+        // si el accessToken expiró intentamos refrescarlo
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          try {
+            const response = await getProfileRequest(newToken);
+            const userData = response?.data || response;
+            setUser(userData);
+          } catch {
+            await logout();
+          }
+        }
       } finally {
         setCheckingAuth(false);
       }
     };
 
     fetchProfile();
-  }, [token]);
+  }, [token, refreshAccessToken, logout]);
 
   const login = async (email, password) => {
-    console.log("LOGIN INTENTANDO...");
-
     const response = await loginRequest(email, password);
-    console.log("RESPUESTA LOGIN:", response);
 
-    const newToken = response?.token || response?.data?.token;
-    const userData = response?.user || response?.data?.user;
+    const accessToken = response?.accessToken;
+    const refreshToken = response?.refreshToken;
+    const userData = response?.user;
 
-    console.log("TOKEN GUARDADO EN LOGIN:", newToken);
-    console.log("USER DESDE LOGIN:", userData);
-
-    localStorage.setItem("token", newToken);
-    setToken(newToken);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    setToken(accessToken);
     setUser(userData);
   };
 
-  const logout = () => {
-    console.log("LOGOUT EJECUTADO");
-    localStorage.removeItem("token");
-    setToken(null);
-    setUser(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ user, token, checkingAuth, login, logout }}>
+    <AuthContext.Provider value={{ user, token, checkingAuth, login, logout, refreshAccessToken }}>
       {children}
     </AuthContext.Provider>
   );

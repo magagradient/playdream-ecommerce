@@ -31,6 +31,7 @@ const PasswordResetsModel = require("../models/password_resets");
 const FavoriteSeriesModel = require("../models/favorite_series");
 const FavoriteProductsModel = require("../models/favorite_products");
 const UserCouponsModel = require("../models/user_coupons");
+const RefreshTokensModel = require("../models/refresh_tokens");
 
 // Carritos y Órdenes:
 const ShoppingCartsModel = require("../models/shopping_carts");
@@ -80,6 +81,7 @@ const models = {
   Themes: ThemesModel(sequelize, DataTypes),
   UserCoupons: UserCouponsModel(sequelize, DataTypes),
   Users: UsersModel(sequelize, DataTypes),
+  RefreshTokens: RefreshTokensModel(sequelize, DataTypes),
 };
 
 // relaciones: 

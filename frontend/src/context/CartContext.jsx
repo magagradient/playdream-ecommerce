@@ -1,11 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
-
+const API = import.meta.env.VITE_API_URL;
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const { user, checkingAuth } = useContext(AuthContext);
+  const { user, checkingAuth, token } = useContext(AuthContext);
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -15,9 +15,9 @@ export function CartProvider({ children }) {
     if (!user) return;
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:3000/api/cart_items?user_id=${user.id_user}`, {
+      const res = await fetch(`${API}/cart_items?user_id=${user.id_user}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await res.json();
@@ -39,16 +39,12 @@ export function CartProvider({ children }) {
       return;
     }
     try {
-      console.log("agregando al carrito, user:", user.id_user, "producto:", id_product);
-
-      const cartRes = await fetch(`http://localhost:3000/api/shopping_carts/user/${user.id_user}`, {
+      const cartRes = await fetch(`${API}/shopping_carts/user/${user.id_user}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const cartData = await cartRes.json();
-      console.log("status shopping cart:", cartRes.status);
-      console.log("cart data:", cartData);
 
       if (!cartRes.ok) {
         console.error("No se encontró el carrito del usuario");
@@ -56,16 +52,14 @@ export function CartProvider({ children }) {
       }
       const id_cart = cartData.data.id_cart;
 
-      const res = await fetch(`http://localhost:3000/api/cart_items`, {
+      const res = await fetch(`${API}/cart_items`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ id_cart, id_product, quantity: 1 }),
       });
-
-      console.log("status cart item:", res.status);
 
       if (res.ok) {
         await fetchCart();
@@ -73,6 +67,22 @@ export function CartProvider({ children }) {
       }
     } catch (error) {
       console.error("Error al agregar al carrito:", error);
+    }
+  };
+
+  const removeFromCart = async (id_item) => {
+    try {
+      const res = await fetch(`${API}/cart_items/${id_item}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        setCart((prev) => prev.filter((item) => item.id_item !== id_item));
+      }
+    } catch (error) {
+      console.error("Error al eliminar item del carrito:", error);
     }
   };
 
@@ -85,7 +95,7 @@ export function CartProvider({ children }) {
   }, [user, checkingAuth]);
 
   return (
-    <CartContext.Provider value={{ cart, setCart, loading, fetchCart, clearCart, isOpen, toggleCart, addToCart }}>
+    <CartContext.Provider value={{ cart, setCart, loading, fetchCart, clearCart, removeFromCart, isOpen, toggleCart, addToCart }}>
       {children}
     </CartContext.Provider>
   );

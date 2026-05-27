@@ -22,6 +22,8 @@ const getProfile = require("../controllers/users/get/profile");
 // post
 const create = require("../controllers/users/post/create");
 const login = require("../controllers/users/post/login");
+const refresh = require("../controllers/users/post/refresh");
+const logout = require("../controllers/users/post/logout");
 
 // put
 const update = require("../controllers/users/put/update");
@@ -43,6 +45,8 @@ router.get("/:id/password-changes", auth(), validateSchema(idParamSchema, "param
 // post (públicas)
 router.post("/login", loginLimiter, validateSchema(loginSchema, "body"), login);
 router.post("/", registerLimiter, validateSchema(registerSchema, "body"), create);
+router.post("/refresh", refresh);
+router.post("/logout", logout);
 
 // put (protegida)
 router.put("/:id", auth(), validateSchema(idParamSchema, "params"), validateSchema(updateUserSchema, "body"), update);

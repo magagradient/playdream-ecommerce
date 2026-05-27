@@ -1,4 +1,4 @@
-const { Users } = require("../../../database/indexModels");
+const { Users, RefreshTokens } = require("../../../database/indexModels");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
@@ -6,7 +6,6 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // validaciones básicas
         if (!email || !password) {
             return res.status(400).json({ message: "Email y contraseña son obligatorios" });
         }
@@ -17,35 +16,52 @@ const login = async (req, res) => {
 
         const normalizedEmail = email.toLowerCase().trim();
 
-        // buscar usuario por email y que no esté borrado
-        const user = await Users.findOne({ 
-            where: { email: normalizedEmail, is_deleted: false } 
+        const user = await Users.findOne({
+            where: { email: normalizedEmail, is_deleted: false }
         });
 
         if (!user) {
             return res.status(401).json({ message: "Usuario o contraseña inválidos" });
         }
 
-        // comparar password
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
             return res.status(401).json({ message: "Usuario o contraseña inválidos" });
         }
 
-        // generar token JWT
-        const token = jwt.sign(
+        // generar access token (15 minutos)
+        const accessToken = jwt.sign(
             { id_user: user.id_user, email: user.email, role: user.role },
             process.env.JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "15m" }
         );
 
-        return res.json({
-          token,
-          user: {
+        // generar refresh token (7 días)
+        const refreshToken = jwt.sign(
+            { id_user: user.id_user },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        // guardar refresh token en la base de datos
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+
+        await RefreshTokens.create({
             id_user: user.id_user,
-            email: user.email,
-            role: user.role
-          }
+            token: refreshToken,
+            expires_at: expiresAt,
+        });
+
+        return res.json({
+            accessToken,
+            refreshToken,
+            user: {
+                id_user: user.id_user,
+                email: user.email,
+                role: user.role,
+                name: user.name,
+            }
         });
 
     } catch (error) {

@@ -2,7 +2,7 @@ import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 export default function CartSidebar() {
-  const { cart, loading, isOpen, toggleCart, clearCart } = useCart();
+  const { cart, loading, isOpen, toggleCart, clearCart, removeFromCart } = useCart();
   const navigate = useNavigate();
 
   const goToCheckout = () => {
@@ -46,7 +46,10 @@ export default function CartSidebar() {
             <span className="text-on-surface-variant text-xs mr-2">
               ${item.product?.price}
             </span>
-            <span className="material-symbols-outlined group-hover:text-error cursor-pointer">
+            <span
+              className="material-symbols-outlined group-hover:text-error cursor-pointer"
+              onClick={() => removeFromCart(item.id_item)}
+            >
               delete_forever
             </span>
           </div>
