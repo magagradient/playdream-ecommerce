@@ -31,6 +31,7 @@ export default function AdminProducts() {
       title: product.title,
       price: product.price,
       description: product.description || "",
+      description_long: product.description_long || "",
       is_sold: product.is_sold,
       visible_in_portfolio: product.visible_in_portfolio,
     });
@@ -81,13 +82,11 @@ export default function AdminProducts() {
       const formData = new FormData();
       formData.append("image", imageFile);
       formData.append("type", imageType);
-
       const res = await fetch(`${API}/products/${id}/upload-image`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-
       if (res.ok) {
         setUploadSuccess(true);
         setTimeout(() => {
@@ -137,8 +136,7 @@ export default function AdminProducts() {
               <>
                 <tr
                   key={p.id_product}
-                  className={`border-b border-[#494551]/40 transition-colors ${p.is_deleted ? "opacity-40" : "hover:bg-[#1d1b20]"
-                    }`}
+                  className={`border-b border-[#494551]/40 transition-colors ${p.is_deleted ? "opacity-40" : "hover:bg-[#1d1b20]"}`}
                 >
                   <td className="py-3 pr-4 text-[#494551]">{p.id_product}</td>
 
@@ -219,6 +217,29 @@ export default function AdminProducts() {
                     )}
                   </td>
                 </tr>
+
+                {editingId === p.id_product && (
+                  <tr key={`edit-desc-${p.id_product}`} className="border-b border-[#494551]/40">
+                    <td colSpan={7} className="py-3 px-4 bg-[#1d1b20]">
+                      <div className="space-y-2">
+                        <textarea
+                          rows={2}
+                          placeholder="Descripción corta"
+                          className="w-full bg-[#141218] border border-[#ffb4ab] text-[#e6e0e9] px-2 py-1 text-xs resize-none outline-none"
+                          value={editForm.description}
+                          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                        />
+                        <textarea
+                          rows={4}
+                          placeholder="Descripción larga"
+                          className="w-full bg-[#141218] border border-[#ffb4ab] text-[#e6e0e9] px-2 py-1 text-xs resize-none outline-none"
+                          value={editForm.description_long}
+                          onChange={(e) => setEditForm({ ...editForm, description_long: e.target.value })}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                )}
 
                 {uploadingId === p.id_product && (
                   <tr key={`upload-${p.id_product}`} className="border-b border-[#494551]/40">

@@ -211,10 +211,17 @@ export default function AdminCreateProduct() {
         </div>
 
         <div>
-          <label className="text-[#494551] text-xs uppercase tracking-widest block mb-1">Descripción</label>
-          <textarea name="description" value={form.description} onChange={handleChange} rows={3}
+          <label className="text-[#494551] text-xs uppercase tracking-widest block mb-1">Descripción corta</label>
+          <textarea name="description" value={form.description} onChange={handleChange} rows={2}
             className="w-full bg-[#1d1b20] border border-[#494551] text-[#e6e0e9] px-3 py-2 text-sm focus:border-[#ffb4ab] outline-none resize-none"
             placeholder="Cover art + Banner" />
+        </div>
+
+        <div>
+          <label className="text-[#494551] text-xs uppercase tracking-widest block mb-1">Descripción larga</label>
+          <textarea name="description_long" value={form.description_long} onChange={handleChange} rows={5}
+            className="w-full bg-[#1d1b20] border border-[#494551] text-[#e6e0e9] px-3 py-2 text-sm focus:border-[#ffb4ab] outline-none resize-none"
+            placeholder="Descripción detallada del producto, concepto, técnica utilizada..." />
         </div>
 
         <div>
